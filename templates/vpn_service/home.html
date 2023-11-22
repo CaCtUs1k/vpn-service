@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>VPN Home</title>
+</head>
+<body>
+    <h1>Your Sites</h1>
+    <ul>
+        {% for site in sites %}
+            <li><a href="{% url "proxy" user_site_name=site.name original_path="/" %}">{{ site.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <h1>Your Statistics</h1>
+    <table>
+        <tr>
+            <th>Site</th>
+            <th>Page Views</th>
+            <th>Data Sent</th>
+            <th>Data Received</th>
+        </tr>
+        {% for stat in statistics %}
+            <tr>
+                <td>{{ stat.site.name }}</td>
+                <td>{{ stat.page_views }}</td>
+                <td>{{ stat.data_sent }}</td>
+                <td>{{ stat.data_received }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

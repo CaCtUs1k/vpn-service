@@ -14,6 +14,3 @@ class Statistic(models.Model):
     page_views = models.PositiveIntegerField(default=0)
     data_sent = models.PositiveIntegerField(default=0)
     data_received = models.PositiveIntegerField(default=0)
-
-
-
