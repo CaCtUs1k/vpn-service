@@ -1,9 +1,10 @@
 from django.urls import path
 
-from main.views import home
+from main import views
 
 app_name = "main"
 
 urlpatterns = [
-    path("", home, name="home"),
+    path("", views.home, name="home"),
+    path("register/", views.register, name="register")
 ]
