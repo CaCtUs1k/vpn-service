@@ -1,9 +1,16 @@
-from django.shortcuts import render
+from urllib.parse import urlparse, urlunparse
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views import generic
 
 from main.forms import UserRegistrationForm
 from main.models import Site, Statistic
 
 
+@login_required
 def home(request):
     user = request.user
     sites = Site.objects.filter(user=user)
@@ -17,6 +24,7 @@ def home(request):
     return render(request, "vpn_service/home.html", context)
 
 
+@login_required
 def register(request):
     if request.method == "POST":
         user_form = UserRegistrationForm(request.POST)
@@ -34,3 +42,10 @@ def register(request):
     return render(
         request, "registration/register.html", {"user_form": user_form}
     )
+
+
+class CreateSiteProxyView(LoginRequiredMixin, generic.CreateView):
+    model = Site
+    fields = "__all__"
+    success_url = reverse_lazy("main:home")
+    template_name = "vpn_service/site_form.html"
