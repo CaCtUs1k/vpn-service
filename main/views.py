@@ -1,12 +1,28 @@
+import requests
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
 from main.forms import UserRegistrationForm
 from main.models import Site, Statistic
+
+
+class CreateSiteProxyView(LoginRequiredMixin, generic.CreateView):
+    model = Site
+    fields = "__all__"
+    success_url = reverse_lazy("main:home")
+    template_name = "vpn_service/site_form.html"
+
+
+class AccountView(LoginRequiredMixin, generic.DetailView):
+    model = User
+    fields = ("username", "email", "first_name", "last_name")
+    template_name = "vpn_service/account.html"
 
 
 @login_required
@@ -23,7 +39,6 @@ def home(request):
     return render(request, "vpn_service/home.html", context)
 
 
-@login_required
 def register(request):
     if request.method == "POST":
         user_form = UserRegistrationForm(request.POST)
@@ -43,14 +58,13 @@ def register(request):
     )
 
 
-class CreateSiteProxyView(LoginRequiredMixin, generic.CreateView):
-    model = Site
-    fields = "__all__"
-    success_url = reverse_lazy("main:home")
-    template_name = "vpn_service/site_form.html"
+@login_required
+def proxy_view(request, proxy_name, proxy_url):
+    try:
+        proxy = Site.objects.get(name=proxy_name)
+    except Site.DoesNotExist:
+        return HttpResponse("Not find", status=404)
 
+    response = requests.get(proxy_url)
 
-class AccountView(LoginRequiredMixin, generic.DetailView):
-    model = User
-    fields = ("username", "email", "first_name", "last_name")
-    template_name = "vpn_service/account.html"
+    return HttpResponse(response.content, content_type=response.headers["content-type"])

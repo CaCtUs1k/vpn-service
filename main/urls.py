@@ -8,5 +8,6 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("register/", views.register, name="register"),
     path("sites/create/", views.CreateSiteProxyView.as_view(), name="create-site"),
-    path("profile/<int:pk>", views.AccountView.as_view(), name="profile")
+    path("profile/<int:pk>", views.AccountView.as_view(), name="profile"),
+    path("proxy/<str:proxy_name>/<path:proxy_url>", views.proxy_view, name="proxy"),
 ]

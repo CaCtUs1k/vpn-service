@@ -6,7 +6,7 @@
     <h1>Your Sites</h1>
     <ul>
         {% for site in sites %}
-            <li><a href="#">{{ site.name }}</a></li>
+            <li><a href="{% url 'main:proxy' proxy_name=site.name proxy_url=site.url %}">{{ site.name }}</a></li>
         {% endfor %}
     </ul>
 
