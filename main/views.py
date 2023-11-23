@@ -1,8 +1,7 @@
-from urllib.parse import urlparse, urlunparse
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -49,3 +48,9 @@ class CreateSiteProxyView(LoginRequiredMixin, generic.CreateView):
     fields = "__all__"
     success_url = reverse_lazy("main:home")
     template_name = "vpn_service/site_form.html"
+
+
+class AccountView(LoginRequiredMixin, generic.DetailView):
+    model = User
+    fields = ("username", "email", "first_name", "last_name")
+    template_name = "vpn_service/account.html"
