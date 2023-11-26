@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Your Statistics</h1>
+    <table>
+        <tr>
+            <th> Site</th>
+            <th>Page Views</th>
+            <th>Data Sent</th>
+            <th>Data Received</th>
+        </tr>
+        {% for stat in statistics %}
+            <tr>
+                <td>{{ stat.site.name }}</td>
+                <td>{{ stat.page_views }}</td>
+                <td>{{ stat.data_sent }}</td>
+                <td>{{ stat.data_received }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -1,15 +1,23 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import generic
 
 from user.forms import UserRegistrationForm
-from vpn_service import settings
 
 
-class AccountView(LoginRequiredMixin, generic.DetailView):
-    model = settings.AUTH_USER_MODEL
-    fields = ("username", "email", "first_name", "last_name")
-    template_name = "vpn_service/../templates/user/account.html"
+def account(request):
+    if request.method == "GET":
+        user = request.user
+        return render(request, "user/account.html", context={"user": user})
+
+
+class UpdateUserView(LoginRequiredMixin, generic.UpdateView):
+    model = get_user_model()
+    template_name = "user/user_form.html"
+    fields = ("first_name", "last_name", "email", "username")
+    success_url = reverse_lazy("main:home")
 
 
 def register(request):

@@ -5,13 +5,20 @@ import requests
 from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
 from main.models import Site, Statistic
+
+
+class ListStatisticView(LoginRequiredMixin, generic.ListView):
+    model = Statistic
+    fields = "__all__"
+    template_name = "vpn_service/statistic_list.html"
+
+    def get_queryset(self):
+        return Statistic.objects.filter(user=self.request.user)
 
 
 class CreateSiteProxyView(LoginRequiredMixin, generic.CreateView):
@@ -21,18 +28,14 @@ class CreateSiteProxyView(LoginRequiredMixin, generic.CreateView):
     template_name = "vpn_service/site_form.html"
 
 
-@login_required
-def home(request):
-    user = request.user
-    sites = Site.objects.filter(user=user)
-    statistics = Statistic.objects.filter(user=user)
+class HomeView(LoginRequiredMixin, generic.ListView):
+    template_name = 'vpn_service/home.html'
+    context_object_name = 'sites'
+    model = Site
+    paginate_by = 15
 
-    context = {
-        "sites": sites,
-        "statistics": statistics,
-    }
-
-    return render(request, "vpn_service/home.html", context)
+    def get_queryset(self):
+        return Site.objects.filter(user=self.request.user)
 
 
 @login_required
@@ -78,6 +81,7 @@ def proxy_view(request, proxy_name, proxy_url):
             print(f"Failed to fetch script. Status code: {script_response.status_code}")
 
     for a_tag in soup.find_all("a", href=True):
-        a_tag["href"] = f"/{proxy_name}/{proxy.url}{a_tag['href']}"
+        if "https://" not in a_tag["href"]:
+                a_tag["href"] = f"/{proxy_name}/{proxy.url}{a_tag['href']}"
 
     return HttpResponse(str(soup), content_type=response.headers["content-type"])
