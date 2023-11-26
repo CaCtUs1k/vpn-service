@@ -43,8 +43,8 @@ class DeleteSiteProxyView(LoginRequiredMixin, generic.DeleteView):
 
 
 class HomeView(LoginRequiredMixin, generic.ListView):
-    template_name = 'vpn_service/home.html'
-    context_object_name = 'sites'
+    template_name = "vpn_service/home.html"
+    context_object_name = "sites"
     model = Site
     paginate_by = 15
 
@@ -64,12 +64,16 @@ def proxy_view(request, proxy_name, proxy_url):
     bytes_sent = len(request.body) if request.body else 0
     bytes_received = len(response.content)
 
-    soup = BeautifulSoup(response.content, 'html.parser')
+    soup = BeautifulSoup(response.content, "html.parser")
 
     utils.get_css(soup, proxy_url)
     utils.get_scripts(soup, proxy_url)
     utils.reformat_href(soup, proxy)
 
-    utils.update_statistic(request, proxy, bytes_sent, bytes_received, page_views=1)
+    utils.update_statistic(
+        request, proxy, bytes_sent, bytes_received, page_views=1
+    )
 
-    return HttpResponse(str(soup), content_type=response.headers["content-type"])
+    return HttpResponse(
+        str(soup), content_type=response.headers["content-type"]
+    )
