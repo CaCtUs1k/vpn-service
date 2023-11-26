@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Your Sites</h1>
+    <h1 class="align-content-center">Your Sites</h1>
     <ul>
+        {% if not sites %}<h2>You don't have any websites yet</h2>{% endif %}
         {% for site in sites %}
-            <li><a href="{% url 'main:proxy' proxy_name=site.name proxy_url=site.url %}">{{ site.name }}</a></li>
+            <li class="site-item">
+                <a class="site-name" href="{% url 'main:proxy' proxy_name=site.name proxy_url=site.url %}">{{ site.name }}</a>
+                <a class="btn btn-primary float-right" href="{% url 'main:update-site' pk=site.pk %}">Update</a>
+                <a class="btn btn-danger float-right mr-2" href="{% url 'main:delete-site' pk=site.pk %}">Delete</a>
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}

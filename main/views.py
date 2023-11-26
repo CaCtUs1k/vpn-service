@@ -1,5 +1,3 @@
-from urllib.parse import urljoin
-
 import requests
 
 from bs4 import BeautifulSoup
@@ -27,7 +25,21 @@ class CreateSiteProxyView(LoginRequiredMixin, generic.CreateView):
     model = Site
     fields = "__all__"
     success_url = reverse_lazy("main:home")
-    template_name = "vpn_service/site_form.html"
+    template_name = "vpn_service/site_form_create.html"
+
+
+class UpdateSiteProxyView(LoginRequiredMixin, generic.UpdateView):
+    model = Site
+    fields = "__all__"
+    success_url = reverse_lazy("main:home")
+    template_name = "vpn_service/site_form_update.html"
+
+
+class DeleteSiteProxyView(LoginRequiredMixin, generic.DeleteView):
+    model = Site
+    fields = "__all__"
+    success_url = reverse_lazy("main:home")
+    template_name = "vpn_service/site_delete.html"
 
 
 class HomeView(LoginRequiredMixin, generic.ListView):
