@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ user.username }}'s profile</h1>
+    {% if user.first_name %}<p>First name: {{ user.first_name }}</p>{% endif %}
+    {% if user.last_name %}<p>Last name: {{ user.last_name }}</p>{% endif %}
+    {% if user.email %}<p>Email: {{ user.email }}</p>{% endif %}
+    <a class="btn btn-primary" href="{% url 'main:home' %}">Cancel</a>
+    <a class="btn btn-primary mr-2" href="{% url 'user:user-update' pk=user.pk %}">Update info</a>
+{% endblock %}
