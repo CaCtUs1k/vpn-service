@@ -14,7 +14,9 @@
     `python manage.py makemigrations`
 
     `python manage.py migrate`
-
+3. Configure .env flie
+   
+5. Use following command:
     `python manage.py runserver`
 
 # Docker install
