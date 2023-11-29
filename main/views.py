@@ -1,6 +1,8 @@
+import os
+import shutil
+
 import requests
 
-from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -41,6 +43,19 @@ class DeleteSiteProxyView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("main:home")
     template_name = "vpn_service/site_delete.html"
 
+    def post(self, request, *args, **kwargs):
+        site = self.get_object()
+
+        media_folder_path = os.path.join("media", site.name)
+        if os.path.exists(media_folder_path):
+            shutil.rmtree(media_folder_path)
+
+        static_folder_path = os.path.join("static", site.name)
+        if os.path.exists(static_folder_path):
+            shutil.rmtree(static_folder_path)
+
+        return super().post(request, *args, **kwargs)
+
 
 class HomeView(LoginRequiredMixin, generic.ListView):
     template_name = "vpn_service/home.html"
@@ -52,7 +67,7 @@ class HomeView(LoginRequiredMixin, generic.ListView):
         return Site.objects.filter(user=self.request.user)
 
 
-@login_required
+@login_required()
 def proxy_view(request, proxy_name, proxy_url):
     try:
         proxy = Site.objects.get(name=proxy_name)
@@ -64,16 +79,10 @@ def proxy_view(request, proxy_name, proxy_url):
     bytes_sent = len(request.body) if request.body else 0
     bytes_received = len(response.content)
 
-    soup = BeautifulSoup(response.content, "html.parser")
+    base_folder = os.path.join("media/", proxy_name)
 
-    utils.get_css(soup, proxy_url)
-    utils.get_scripts(soup, proxy_url)
-    utils.reformat_href(soup, proxy)
+    soup = utils.download_page_with_selenium(proxy_url, base_folder, proxy)
 
-    utils.update_statistic(
-        request, proxy, bytes_sent, bytes_received, page_views=1
-    )
+    utils.update_statistic(request, proxy, bytes_sent, bytes_received, page_views=1)
 
-    return HttpResponse(
-        str(soup), content_type=response.headers["content-type"]
-    )
+    return HttpResponse(str(soup), content_type=response.headers["content-type"])
